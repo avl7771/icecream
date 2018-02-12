@@ -612,8 +612,13 @@ bool analyse_argv(const char * const *argv, CompileJob &job, bool icerun, list<s
                             string file = argv[i + 2];
 
                             if (access(file.c_str(), R_OK) == 0) {
-                                file = get_absfilename(file);
-                                extrafiles->push_back(file);
+                                // Leave the file as it is, the path will be rewritten
+                                // later (for remote jobs).
+                                // See CompileJob::rewritePluginPaths()
+                                // file = get_absfilename(file);
+
+                                // Do not send the plugin with each job
+                                // extrafiles->push_back(file);
                             } else {
                                 always_local = true;
                                 log_info() << "plugin for argument "

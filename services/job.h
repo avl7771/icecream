@@ -119,6 +119,9 @@ public:
     {
         m_flags = flags;
     }
+
+    void rewritePluginPathsForRemoteJob();
+
     std::list<std::string> localFlags() const;
     std::list<std::string> remoteFlags() const;
     std::list<std::string> restFlags() const;

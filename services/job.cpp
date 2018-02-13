@@ -75,12 +75,13 @@ void CompileJob::rewritePluginPaths(bool remote) {
               log_info() << "Rewritten path:" << it->first << " -> "
                          << found->second << std::endl;
               it->first = found->second;
-              m_plugins.erase(found);
             }
          }
         }
         state = NONE;
     }
+    if (!remote)
+      m_plugins.clear();
 }
 
 list<string> CompileJob::localFlags() const

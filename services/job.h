@@ -24,6 +24,7 @@
 #define ICECREAM_COMPILE_JOB_H
 
 #include <list>
+#include <map>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -120,7 +121,7 @@ public:
         m_flags = flags;
     }
 
-    void rewritePluginPathsForRemoteJob();
+    void rewritePluginPaths(bool remote);
 
     std::list<std::string> localFlags() const;
     std::list<std::string> remoteFlags() const;
@@ -205,6 +206,7 @@ public:
     }
 
 private:
+    typedef std::map<std::string, std::string> PluginsT;
     std::list<std::string> flags(Argument_Type argumentType) const;
     void setTargetPlatform();
 
@@ -219,6 +221,7 @@ private:
     std::string m_target_platform;
     bool m_dwarf_fission;
     bool m_block_rewrite_includes;
+    PluginsT m_plugins;
 };
 
 inline void appendList(std::list<std::string> &list, const std::list<std::string> &toadd)

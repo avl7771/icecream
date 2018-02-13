@@ -41,6 +41,37 @@ list<string> CompileJob::flags(Argument_Type argumentType) const
     return args;
 }
 
+void CompileJob::rewritePluginPathsForRemoteJob() {
+    enum ArgState { NONE, XCLANG, XLOAD, XPLUGIN };
+    ArgState state = NONE;
+    for (ArgumentsList::iterator it = m_flags.begin(); it != m_flags.end(); ++it) {
+        if (it->first == "-Xclang" && state == NONE) {
+          state = XCLANG;
+          continue;
+        }
+        if (it->first == "-load" && state == XCLANG) {
+          state = XLOAD;
+          continue;
+        }
+        if (it->first == "-Xclang" && state == XLOAD) {
+          state = XPLUGIN;
+          continue;
+        }
+        if (state == XPLUGIN) {
+          std::string filename = it->first;
+          size_t index = filename.find_last_of('/');
+          if (index != string::npos) {
+            filename = filename.substr(index + 1);
+          }
+          filename = "/usr/local/lib/" + filename;
+          log_info() << "Rewritten path:" << it->first << " -> "
+                     << filename << std::endl;
+          it->first = filename;
+        }
+        state = NONE;
+    }
+}
+
 list<string> CompileJob::localFlags() const
 {
     return flags(Arg_Local);

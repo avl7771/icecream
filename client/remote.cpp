@@ -750,6 +750,8 @@ static int minimalRemoteVersion( const CompileJob& job)
 
 int build_remote(CompileJob &job, MsgChannel *local_daemon, const Environments &_envs, int permill)
 {
+    job.rewritePluginPathsForRemoteJob();
+
     srand(time(0) + getpid());
 
     int torepeat = 1;

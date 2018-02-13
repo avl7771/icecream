@@ -64,7 +64,7 @@ void CompileJob::rewritePluginPaths(bool remote) {
             if (index != string::npos) {
               filename = filename.substr(index + 1);
             }
-            filename = "/usr/local/lib/" + filename;
+            filename = "/usr/lib/" + filename;
             log_info() << "Rewritten path:" << it->first << " -> "
                        << filename << std::endl;
             m_plugins[filename] = it->first;

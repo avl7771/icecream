@@ -488,6 +488,7 @@ static int build_remote_int(CompileJob &job, UseCSMsg *usecs, MsgChannel *local_
             job.appendFlag( job.language() == CompileJob::Lang_OBJC ? "objective-c" : "objective-c++", Arg_Remote );
         }
 
+        job.rewritePluginPaths(true);
         CompileFileMsg compile_file(&job);
         {
             log_block b("send compile_file");
@@ -497,6 +498,7 @@ static int build_remote_int(CompileJob &job, UseCSMsg *usecs, MsgChannel *local_
                 throw client_error(9, "Error 9 - error sending file to remote");
             }
         }
+        job.rewritePluginPaths(false);
 
         if (!preproc_file) {
             int sockets[2];
@@ -750,8 +752,6 @@ static int minimalRemoteVersion( const CompileJob& job)
 
 int build_remote(CompileJob &job, MsgChannel *local_daemon, const Environments &_envs, int permill)
 {
-    job.rewritePluginPathsForRemoteJob();
-
     srand(time(0) + getpid());
 
     int torepeat = 1;

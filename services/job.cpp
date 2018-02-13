@@ -41,7 +41,7 @@ list<string> CompileJob::flags(Argument_Type argumentType) const
     return args;
 }
 
-void CompileJob::rewritePluginPathsForRemoteJob() {
+void CompileJob::rewritePluginPaths(bool remote) {
     enum ArgState { NONE, XCLANG, XLOAD, XPLUGIN };
     ArgState state = NONE;
     for (ArgumentsList::iterator it = m_flags.begin(); it != m_flags.end(); ++it) {
@@ -58,18 +58,29 @@ void CompileJob::rewritePluginPathsForRemoteJob() {
           continue;
         }
         if (state == XPLUGIN) {
-          std::string filename = it->first;
-          size_t index = filename.find_last_of('/');
-          if (index != string::npos) {
-            filename = filename.substr(index + 1);
-          }
-          filename = "/usr/local/lib/" + filename;
-          log_info() << "Rewritten path:" << it->first << " -> "
-                     << filename << std::endl;
-          it->first = filename;
+          if (remote) {
+            std::string filename = it->first;
+            size_t index = filename.find_last_of('/');
+            if (index != string::npos) {
+              filename = filename.substr(index + 1);
+            }
+            log_info() << "Rewritten path:" << it->first << " -> "
+                       << filename << std::endl;
+            m_plugins[filename] = it->first;
+            it->first = filename;
+          } else {
+            PluginsT::const_iterator found = m_plugins.find(it->first);
+            if (found != m_plugins.end()) {
+              log_info() << "Rewritten path:" << it->first << " -> "
+                         << found->second << std::endl;
+              it->first = found->second;
+            }
+         }
         }
         state = NONE;
     }
+    if (!remote)
+      m_plugins.clear();
 }
 
 list<string> CompileJob::localFlags() const

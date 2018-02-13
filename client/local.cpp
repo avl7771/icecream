@@ -237,6 +237,8 @@ static void handle_user_break(int sig)
  **/
 int build_local(CompileJob &job, MsgChannel *local_daemon, struct rusage *used)
 {
+    job.rewritePluginPaths(false);
+
     list<string> arguments;
 
     string compiler_name = find_compiler(job);
